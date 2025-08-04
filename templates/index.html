@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Message Discord</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-image: url('https://wallpapers.com/images/hd/cool-discord-knyotni0mbdv4bo6.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            backdrop-filter: blur(1px);
+            -webkit-backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            width: 320px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #7289da;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            font-family: 'Roboto', sans-serif;
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        button {
+            font-family: 'Roboto', sans-serif;
+            background-color: #5865F2;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            width: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-sizing: border-box;
+            margin: 0 auto;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #4752c4;
+        }
+
+        #responseMessage {
+            margin-top: 15px;
+            font-size: 14px;
+            min-height: 20px;
+            line-height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .success {
+            color: #28a745;
+        }
+
+        .error {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Send Message To Discord</h1>
+    <form id="textForm">
+        <input type="text" id="textInput" placeholder="Enter your message" required>
+        <button type="submit" title="Send Message">
+            SEND
+        </button>
+    </form>
+    <p id="responseMessage"></p>
+</div>
+
+<script>
+    document.getElementById("textForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        submitText();
+    });
+
+    function submitText() {
+        const textInput = document.getElementById("textInput");
+        const messageEl = document.getElementById("responseMessage");
+
+        messageEl.textContent = "";
+        messageEl.className = "";
+
+        fetch('/input_text', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text: textInput.value })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                messageEl.innerHTML = `<span>✅</span> Message sent successfully!`;
+                messageEl.classList.add("success");
+                textInput.value = "";
+            } else {
+                messageEl.innerHTML = `<span>❌</span> Error: ${data.message}`;
+                messageEl.classList.add("error");
+            }
+        })
+        .catch(error => {
+            messageEl.innerHTML = `<span>❌</span> Request failed: ${error}`;
+            messageEl.classList.add("error");
+        });
+    }
+</script>
+</body>
+</html>
